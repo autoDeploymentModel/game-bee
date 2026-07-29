@@ -1,10 +1,13 @@
 import express from 'express';
 import cors from 'cors';
-import Database from 'better-sqlite3';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const DB_PATH = path.join(__dirname, 'leaderboard.json');
+const MAX_ENTRIES = 50;
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -12,47 +15,45 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public'), { index: 'index.html' }));
 
-// 初始化 SQLite 数据库
-const db = new Database(path.join(__dirname, 'leaderboard.db'));
-db.pragma('journal_mode = WAL');
-db.exec(`
-  CREATE TABLE IF NOT EXISTS scores (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    score INTEGER NOT NULL,
-    level INTEGER DEFAULT 1,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-  );
-  CREATE INDEX IF NOT EXISTS idx_scores_score ON scores(score DESC);
-`);
+function load() {
+  try {
+    if (fs.existsSync(DB_PATH)) return JSON.parse(fs.readFileSync(DB_PATH, 'utf-8'));
+  } catch {}
+  return [];
+}
 
-// GET /api/leaderboard - 获取排行榜前 50
+function save(data) {
+  fs.writeFileSync(DB_PATH, JSON.stringify(data), 'utf-8');
+}
+
 app.get('/api/leaderboard', (req, res) => {
   try {
-    const rows = db.prepare('SELECT name, score, level, created_at FROM scores ORDER BY score DESC LIMIT 50').all();
-    res.json(rows);
+    const limit = Math.min(parseInt(req.query.limit) || 50, 50);
+    res.json(load().slice(0, limit));
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// POST /api/leaderboard - 提交分数
 app.post('/api/leaderboard', (req, res) => {
   const { name, score, level } = req.body;
   if (!name || typeof score !== 'number' || score <= 0) {
     return res.status(400).json({ error: '无效的分数数据' });
   }
   try {
-    db.prepare('INSERT INTO scores (name, score, level) VALUES (?, ?, ?)').run(name, score, level || 1);
+    const scores = load();
+    scores.push({
+      name: name.trim().slice(0, 12),
+      score,
+      level: level || 1,
+      created_at: new Date().toISOString().slice(0, 19).replace('T', ' ')
+    });
+    scores.sort((a, b) => b.score - a.score);
+    save(scores.slice(0, MAX_ENTRIES));
     res.json({ ok: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
-});
-
-// 首页 fallback
-app.get('/', (req, res) => {
-  res.redirect('/index.html');
 });
 
 app.listen(PORT, () => {

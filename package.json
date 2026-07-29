@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "webpack serve --mode development",
     "build": "webpack --mode production",
-    "start": "node server/index.js",
+    "start": "cd server && npm start",
     "clean": "pnpm exec rimraf dist node_modules",
     "install:force": "pnpm install --force"
   },
