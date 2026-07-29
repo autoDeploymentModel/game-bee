@@ -89,11 +89,11 @@ pnpm run dev
 pnpm run build
 ```
 
-构建产物在 `dist/` 目录中。
+构建产物在 `server/public/` 目录中。
 
 ## 服务器部署
 
-排行榜功能需要后端服务器（Express + SQLite）支持。**构建产物自动输出到 `server/public/`，部署时只需上传 `server/` 目录。**
+排行榜功能需要后端服务器（Express + JSON 文件）支持。**构建产物自动输出到 `server/public/`，部署时只需上传 `server/` 目录。**
 
 ### 本地构建
 
@@ -131,12 +131,12 @@ server/                         ← 只需部署这一个目录
 ├── public/                     ← 前端静态文件（构建产物）
 │   ├── index.html
 │   └── main.js
-└── leaderboard.db              ← SQLite 数据库（自动创建）
+└── leaderboard.json           ← 排行榜数据（自动创建，JSON 格式）
 ```
 
 - 服务器同时提供前端页面和排行榜 API
 - 所有访问该服务器的玩家共享同一个排行榜
-- 数据库文件持久化保存，支持备份
+- 数据以 JSON 格式持久化保存，支持备份
 
 ### 使用 PM2 守护进程
 
