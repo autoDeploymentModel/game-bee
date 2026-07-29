@@ -1,16 +1,19 @@
 import express from 'express';
 import cors from 'cors';
 import Database from 'better-sqlite3';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public', { index: 'index.html' }));
+app.use(express.static(path.join(__dirname, 'public'), { index: 'index.html' }));
 
 // 初始化 SQLite 数据库
-const db = new Database('leaderboard.db');
+const db = new Database(path.join(__dirname, 'leaderboard.db'));
 db.pragma('journal_mode = WAL');
 db.exec(`
   CREATE TABLE IF NOT EXISTS scores (
