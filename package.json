@@ -1,0 +1,22 @@
+{
+  "name": "galaga-h5",
+  "version": "1.0.0",
+  "description": "H5 version of FC Galaga shooter game",
+  "type": "module",
+  "main": "server/public/main.js",
+  "scripts": {
+    "dev": "webpack serve --mode development",
+    "build": "webpack --mode production",
+    "start": "npm run dev",
+    "clean": "pnpm exec rimraf dist node_modules",
+    "install:force": "pnpm install --force"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "webpack": "^5.94.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^5.0.4",
+    "rimraf": "^5.0.5"
+  },
+  "packageManager": "pnpm@9.0.0"
+}
