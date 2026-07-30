@@ -137,6 +137,7 @@ window.addEventListener('DOMContentLoaded', () => {
       
       game.update(targetFrameRate);
       game.render();
+      game.input.clearJustPressed();
       
       // 游戏返回菜单时显示菜单覆盖层
       if (game.state === 'menu' && menuOverlay.classList.contains('hidden')) {

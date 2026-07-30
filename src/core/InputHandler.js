@@ -4,6 +4,7 @@
 export class InputHandler {
   constructor() {
     this.keys = {};
+    this.keysJustPressed = {};
     this.mouseButtons = {};
     this.touchState = { left: false, right: false, up: false, down: false, fire: false };
     this.moveTouchId = null;
@@ -18,10 +19,13 @@ export class InputHandler {
   
   initKeyboard() {
     window.addEventListener('keydown', (e) => {
+      if (!this.keys[e.code]) {
+        this.keysJustPressed[e.code] = true;
+      }
       this.keys[e.code] = true;
       
       // 防止方向键滚动页面
-      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) {
+      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Escape'].includes(e.code)) {
         e.preventDefault();
       }
     });
@@ -29,6 +33,10 @@ export class InputHandler {
     window.addEventListener('keyup', (e) => {
       this.keys[e.code] = false;
     });
+  }
+
+  clearJustPressed() {
+    this.keysJustPressed = {};
   }
   
   initMouse() {
@@ -149,10 +157,10 @@ export class InputHandler {
   }
   
   isEnter() {
-    return this.keys['Enter'];
+    return this.keysJustPressed['Enter'];
   }
   
   isEscape() {
-    return this.keys['Escape'];
+    return this.keysJustPressed['Escape'];
   }
 }
