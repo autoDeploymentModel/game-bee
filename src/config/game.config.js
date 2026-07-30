@@ -252,8 +252,8 @@ export const GameConfig = {
       enemyFireRateMul: 1.8,
       playerHp: 1,
       enemySpawnMul: 0.4,
-      powerUpMul: 0.3,
-      dropWeightMul: 0.4,
+      powerUpMul: 0.6,      // 改为与困难相同
+      dropWeightMul: 0.7,   // 改为与困难相同
       scoreMul: 3.0,
       bossHpMul: 3.0,
       loopHpMul: 1.30,
